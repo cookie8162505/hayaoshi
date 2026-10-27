@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#1a1030">
+<title>早押しボタン｜労協NETクイズ アタック25</title>
+<style>
+  :root{--red:#ff2d55;--green:#0fb566;--white:#eef2f7;--blue:#1a6fff;--ink:#2a1a40;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;background:#1a1030;color:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
+    -webkit-user-select:none;user-select:none;touch-action:manipulation;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);}
+  .hidden{display:none !important;}
+  h1{font-size:20px;font-weight:900;letter-spacing:.1em;color:#ffd24d;margin-bottom:6px;text-align:center;}
+  .sub{font-size:14px;color:#c9bfe0;margin-bottom:22px;text-align:center;line-height:1.6;}
+  /* チーム選択 */
+  #pick{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;}
+  .teams{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;}
+  .tp{border:none;border-radius:20px;aspect-ratio:1.25;font-size:44px;font-weight:900;cursor:pointer;font-family:inherit;color:#fff;
+    box-shadow:0 6px 0 rgba(0,0,0,.35);}
+  .tp:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.35);}
+  .tp.red{background:linear-gradient(150deg,#ff7a93,#ff2d55);}
+  .tp.green{background:linear-gradient(150deg,#4fe0a0,#0fb566);}
+  .tp.white{background:linear-gradient(150deg,#ffffff,#dfe5ee);color:#3d4452;}
+  .tp.blue{background:linear-gradient(150deg,#5fa8ff,#1a6fff);}
+  .tp small{display:block;font-size:14px;font-weight:700;opacity:.85;}
+  /* 早押し画面 */
+  #play{width:100%;max-width:460px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:18px 0 22px;}
+  .top{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .badge{font-weight:900;font-size:18px;padding:6px 16px;border-radius:999px;}
+  .conn{font-size:13px;font-weight:700;color:#c9bfe0;display:flex;align-items:center;gap:6px;}
+  .conn i{width:10px;height:10px;border-radius:50%;background:#888;display:inline-block;}
+  .conn.ok i{background:#1fc977;box-shadow:0 0 8px #1fc977;}
+  .conn.ng i{background:#ff5a5a;}
+  #status{font-size:24px;font-weight:900;text-align:center;min-height:3.4em;line-height:1.35;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+  #status small{display:block;font-size:14px;font-weight:700;color:#c9bfe0;}
+  #buzz{width:min(78vw,340px);aspect-ratio:1;border-radius:50%;border:none;cursor:pointer;font-family:inherit;
+    font-size:44px;font-weight:900;color:#fff;letter-spacing:.06em;
+    background:radial-gradient(circle at 35% 30%,var(--hi),var(--c) 60%,var(--lo));
+    box-shadow:0 14px 0 var(--lo),0 20px 40px rgba(0,0,0,.5);transition:transform .06s, box-shadow .06s, filter .2s;}
+  #buzz:active,#buzz.down{transform:translateY(10px);box-shadow:0 4px 0 var(--lo),0 8px 20px rgba(0,0,0,.5);}
+  #buzz.dis{filter:grayscale(.85) brightness(.6);}
+  #buzz.first{animation:glow .6s ease-in-out infinite;}
+  @keyframes glow{0%,100%{box-shadow:0 14px 0 var(--lo),0 0 0 0 rgba(255,210,77,.0);}50%{box-shadow:0 14px 0 var(--lo),0 0 0 18px rgba(255,210,77,.55);}}
+  .team-red{--c:#ff2d55;--hi:#ff9fb2;--lo:#a3102f;}
+  .team-green{--c:#0fb566;--hi:#7bf0b5;--lo:#06683a;}
+  .team-white{--c:#e9edf3;--hi:#ffffff;--lo:#8d97a8;}
+  .team-white #buzz{color:#3d4452;}
+  .team-blue{--c:#1a6fff;--hi:#8cc2ff;--lo:#0a3e9e;}
+  .foot{display:flex;gap:10px;align-items:center;}
+  .link{background:none;border:1px solid rgba(255,255,255,.3);color:#c9bfe0;border-radius:999px;padding:6px 14px;font-size:13px;font-family:inherit;}
+  #err{font-size:13px;color:#ff9a9a;text-align:center;margin-top:10px;max-width:420px;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<!-- チーム選択 -->
+<div id="pick">
+  <h1>アタック25 早押しボタン</h1>
+  <div class="sub">あなたのチームの色を選んでください</div>
+  <div class="teams">
+    <button class="tp red" data-team="red">赤<small>赤チーム</small></button>
+    <button class="tp green" data-team="green">緑<small>緑チーム</small></button>
+    <button class="tp white" data-team="white">白<small>白チーム</small></button>
+    <button class="tp blue" data-team="blue">青<small>青チーム</small></button>
+  </div>
+  <div id="err"></div>
+</div>
+
+<!-- 早押し -->
+<div id="play" class="hidden">
+  <div class="top">
+    <span class="badge" id="teamBadge">赤チーム</span>
+    <span class="conn" id="conn"><i></i><span id="connText">接続中…</span></span>
+  </div>
+  <div id="status">接続しています…</div>
+  <button id="buzz" class="dis">押す！</button>
+  <div class="foot"><button class="link" id="change">チームを変える</button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+/* =========================================================
+   労協NETクイズ アタック25 ― スマホ用早押しボタン
+   QRコードのURL: このページ?room=XXXX
+   会場PCのゲーム（ホスト）と PeerJS(WebRTC) で直接つながる
+   ========================================================= */
+const params=new URLSearchParams(location.search);
+const ROOM=(params.get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const HOST_ID='a25net-'+ROOM;
+const TEAM_NAME={red:'赤',green:'緑',white:'白',blue:'青'};
+const TEAM_BG={red:'#ff2d55',green:'#0fb566',white:'#e9edf3',blue:'#1a6fff'};
+// テスト用：?peer=host:port で独自の中継サーバーを使う
+function peerOpts(){
+  const p=params.get('peer'); if(!p) return {debug:0};
+  const [host,port]=p.split(':'); return {host,port:+port||9000,path:'/',secure:false,debug:0};
+}
+
+let team=null, peer=null, conn=null, state=null, retryTimer=null, myPressed=false;
+const $=id=>document.getElementById(id);
+
+function store(k,v){ try{ v===undefined?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
+function load(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
+
+if(!ROOM){ $('err').textContent='QRコードから開いてください（ルーム番号がありません）'; document.querySelectorAll('.tp').forEach(b=>b.disabled=true); }
+
+/* ---- チーム選択 ---- */
+document.querySelectorAll('.tp').forEach(b=>b.addEventListener('click',()=>chooseTeam(b.dataset.team)));
+function chooseTeam(t){
+  team=t; store('a25_team_'+ROOM,t);
+  document.body.className='team-'+t;
+  $('teamBadge').textContent=TEAM_NAME[t]+'チーム';
+  $('teamBadge').style.background=TEAM_BG[t]; $('teamBadge').style.color=(t==='white')?'#3d4452':'#fff';
+  $('pick').classList.add('hidden'); $('play').classList.remove('hidden');
+  connect();
+  if(conn&&conn.open) conn.send({type:'hello',team});
+  render();
+}
+$('change').addEventListener('click',()=>{ store('a25_team_'+ROOM); $('play').classList.add('hidden'); $('pick').classList.remove('hidden'); });
+
+/* ---- 接続（切れたら自動で再接続） ---- */
+function setConn(ok,text){ const c=$('conn'); c.classList.toggle('ok',ok===true); c.classList.toggle('ng',ok===false); $('connText').textContent=text; }
+function connect(){
+  if(typeof Peer==='undefined'){ setConn(false,'通信部品を読み込めません'); $('status').innerHTML='インターネットに<br>つながっていますか？'; return; }
+  if(peer && !peer.destroyed && conn && conn.open) return;
+  clearTimeout(retryTimer);
+  if(!peer || peer.destroyed || peer.disconnected){
+    try{ if(peer) peer.destroy(); }catch(e){}
+    peer=new Peer(undefined,peerOpts());
+    peer.on('open',()=>openConn());
+    peer.on('error',e=>{ setConn(false,'再接続中…'); scheduleRetry(); });
+    peer.on('disconnected',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
+  }else openConn();
+}
+function openConn(){
+  try{ if(conn) conn.close(); }catch(e){}
+  setConn(null,'会場の画面を探しています…');
+  conn=peer.connect(HOST_ID,{reliable:true});
+  const c=conn;
+  const to=setTimeout(()=>{ if(!c.open){ setConn(false,'会場の画面が見つかりません'); $('status').innerHTML='会場の画面が<br>まだ開いていません<small>自動でつなぎ直します</small>'; scheduleRetry(); } },6000);
+  c.on('open',()=>{ clearTimeout(to); setConn(true,'接続OK'); c.send({type:'hello',team}); });
+  c.on('data',d=>{ if(d&&d.type==='state'){ state=d; render(); } if(d&&d.type==='ack'){ flash(); } });
+  c.on('close',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
+  c.on('error',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
+}
+function scheduleRetry(){ clearTimeout(retryTimer); retryTimer=setTimeout(()=>{ if(!(conn&&conn.open)) connect(); },2500); }
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && team) connect(); });
+
+/* ---- 早押し ---- */
+const btn=$('buzz');
+function press(e){
+  if(e) e.preventDefault();
+  if(!team) return;
+  btn.classList.add('down'); setTimeout(()=>btn.classList.remove('down'),120);
+  if(navigator.vibrate) navigator.vibrate(40);
+  if(!(conn&&conn.open)){ connect(); return; }
+  if(!state||!state.open) return;
+  if(state.order.includes(team)||state.out.includes(team)) return;
+  conn.send({type:'buzz',team});
+}
+btn.addEventListener('touchstart',press,{passive:false});
+btn.addEventListener('mousedown',e=>{ if(e.button===0) press(e); });
+
+function flash(){ btn.animate([{filter:'brightness(1.8)'},{filter:'brightness(1)'}],{duration:300}); }
+
+/* ---- 画面表示 ---- */
+function render(){
+  const st=$('status');
+  btn.classList.remove('first','dis');
+  if(!state){ st.innerHTML='会場の画面を待っています…'; btn.classList.add('dis'); return; }
+  const idx=state.order.indexOf(team);
+  const curTeam=state.order[state.cur];
+  if(state.done){
+    if(state.winner===team){ st.innerHTML='⭕ 正解！<small>パネルをゲット！ 次の問題を待っています</small>'; }
+    else st.innerHTML='締め切りました<small>次の問題を待っています</small>';
+    btn.classList.add('dis'); return;
+  }
+  if(state.out.includes(team)){ st.innerHTML='お手つき…<small>この問題はお休みです</small>'; btn.classList.add('dis'); return; }
+  if(curTeam===team){ st.innerHTML='🎤 あなたの回答！<small>選択肢が出たら A〜D で答えてください</small>'; btn.classList.add('first'); return; }
+  if(idx>=0){ st.innerHTML=`${idx+1}番目に押しました<small>${idx>state.cur?`前のチームが外れたら回答できます`:''}</small>`; btn.classList.add('dis'); return; }
+  if(!state.open){ st.innerHTML=state.q>0?'締め切りました<small>次の問題を待っています</small>':'まもなく始まります<small>問題が出たら押してください</small>'; btn.classList.add('dis'); return; }
+  st.innerHTML=`第${state.q}問！<small>分かったら押す！</small>`;
+}
+
+/* 前回選んだチームを覚えておく（ページを開き直したとき用） */
+const saved=load('a25_team_'+ROOM);
+if(ROOM && saved && TEAM_NAME[saved]) chooseTeam(saved);
+</script>
+</body>
+</html>
