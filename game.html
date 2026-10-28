@@ -515,7 +515,7 @@
       <div class="vol-row"><span style="font-size:13px">早押しページのURL</span>
         <input id="buzzUrl" type="url" placeholder="https://○○.github.io/hayaoshi/" spellcheck="false"></div>
       <div class="vol-row" style="font-size:13px">部屋番号 <b id="roomCode" style="color:#ffd24d;font-size:18px;letter-spacing:.1em"></b>
-        <button class="vol-btn" id="btnNewRoom">番号を変える</button></div>
+</div>
       <div class="vol-row" id="gateConn" style="font-size:14px"></div>
       <div class="vol-note" id="buzzNote"></div>
     </div>
@@ -1458,7 +1458,7 @@ const Buzz=(()=>{
   const QUIZDON="https://quizdon.com/b/CF8M";
   const g=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
   const p=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
-  let room=g('a25_room'); if(!room||!/^[A-Z0-9]{4}$/.test(room)){ room=newCode(); p('a25_room',room); }
+  let room='RKNT';   // 部屋番号は固定（どこで開いても同じ。スマホ側も同じ番号に固定）
   const DEFAULT_PAGE="https://cookie8162505.github.io/hayaoshi/";
   let pageUrl=g('a25_buzz_url'); if(pageUrl===null) pageUrl=DEFAULT_PAGE;
   let peer=null, conns=new Set(), st={type:'state',open:false,q:0,order:[],cur:0,out:[]}, retry=null, ready=false;
@@ -1602,7 +1602,7 @@ document.getElementById('btnBuzzWin').addEventListener('click',e=>{ const t=e.cu
   const u=document.getElementById('buzzUrl'); u.value=Buzz.url();
   u.addEventListener('change',()=>Buzz.setUrl(u.value)); u.addEventListener('input',()=>Buzz.setUrl(u.value));
   document.getElementById('roomCode').textContent=Buzz.room();
-  document.getElementById('btnNewRoom').addEventListener('click',()=>{ if(confirm('部屋番号を変えると、スマホはQRを読み直す必要があります。変えますか？')) Buzz.newRoom(); });
+
   Buzz.start(); Buzz.renderConn();
 })();
 

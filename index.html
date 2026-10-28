@@ -77,7 +77,7 @@
   </div>
   <div id="status">接続しています…</div>
   <button id="buzz" class="dis">押す！</button>
-  <div class="foot"><button class="link" id="change">チームを変える</button></div>
+  <div class="foot"><button class="link" id="change">チームを変える</button><span style="font-size:12px;color:#8a7fa8">部屋 RKNT</span></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -88,7 +88,8 @@
    会場PCのゲーム（ホスト）と PeerJS(WebRTC) で直接つながる
    ========================================================= */
 const params=new URLSearchParams(location.search);
-const ROOM=(params.get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+// 部屋番号は固定（どこでゲームを開いても同じ番号）。古いQRの番号が付いていても固定番号につなぐ
+const ROOM='RKNT';
 const HOST_ID='a25net-'+ROOM;
 const TEAM_NAME={red:'赤',green:'緑',white:'白',blue:'青'};
 const TEAM_BG={red:'#ff2d55',green:'#0fb566',white:'#e9edf3',blue:'#1a6fff'};
@@ -104,7 +105,7 @@ const $=id=>document.getElementById(id);
 function store(k,v){ try{ v===undefined?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
 function load(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
 
-if(!ROOM){ $('err').textContent='QRコードから開いてください（ルーム番号がありません）'; document.querySelectorAll('.tp').forEach(b=>b.disabled=true); }
+
 
 /* ---- チーム選択 ---- */
 document.querySelectorAll('.tp').forEach(b=>b.addEventListener('click',()=>chooseTeam(b.dataset.team)));
@@ -130,16 +131,29 @@ function connect(){
     try{ if(peer) peer.destroy(); }catch(e){}
     peer=new Peer(undefined,peerOpts());
     peer.on('open',()=>openConn());
-    peer.on('error',e=>{ setConn(false,'再接続中…'); scheduleRetry(); });
+    peer.on('error',e=>{
+      if(e && e.type==='peer-unavailable'){ hostMissing=true; showMissing(); }
+      else { setConn(false,'再接続中…'); }
+      scheduleRetry();
+    });
     peer.on('disconnected',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
   }else openConn();
 }
+let hostMissing=false;
+function showMissing(){
+  setConn(false,'会場の画面が見つかりません');
+  $('status').innerHTML='会場のゲーム画面が<br>受付中になっていません<small>パソコンでゲームを開いて「受付中」になると自動でつながります</small>';
+}
 function openConn(){
   try{ if(conn) conn.close(); }catch(e){}
+  hostMissing=false;
   setConn(null,'会場の画面を探しています…');
   conn=peer.connect(HOST_ID,{reliable:true});
   const c=conn;
-  const to=setTimeout(()=>{ if(!c.open){ setConn(false,'会場の画面が見つかりません'); $('status').innerHTML='会場の画面が<br>まだ開いていません<small>自動でつなぎ直します</small>'; scheduleRetry(); } },6000);
+  const to=setTimeout(()=>{ if(c.open) return;
+    if(hostMissing){ showMissing(); }
+    else { setConn(false,'通信がつながりません'); $('status').innerHTML='会場の画面は見つかりましたが<br>通信がつながりません<small>ネットワークの制限の可能性があります。Wi-Fiを切って携帯回線で試してください</small>'; }
+    scheduleRetry(); },8000);
   c.on('open',()=>{ clearTimeout(to); setConn(true,'接続OK'); c.send({type:'hello',team}); });
   c.on('data',d=>{ if(d&&d.type==='state'){ state=d; render(); } if(d&&d.type==='ack'){ flash(); } });
   c.on('close',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
