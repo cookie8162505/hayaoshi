@@ -26,6 +26,8 @@
     background:linear-gradient(135deg,#fff3a0,#ffc531);border:3px solid #fff;border-radius:999px;padding:14px 46px;
     box-shadow:0 6px 0 #c47a00,0 10px 24px rgba(120,30,0,.45);animation:joinIn .5s ease-out 1.1s both,joinPulse 1.6s ease-in-out 1.6s infinite;}
   #op .tap:active{transform:translateY(4px);box-shadow:0 2px 0 #c47a00;}
+  #op .resume{margin-top:18px;font-family:inherit;font-size:14px;font-weight:800;color:#fff;background:rgba(80,10,0,.35);
+    border:1.5px solid rgba(255,255,255,.7);border-radius:999px;padding:8px 18px;cursor:pointer;animation:joinIn .5s ease-out 1.4s both;}
   @keyframes joinIn{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:none;}}
   @keyframes joinPulse{50%{transform:scale(1.06);}}
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
@@ -74,6 +76,11 @@
   .cbtn.sent{animation:sent .5s ease-out;}
   @keyframes sent{0%{transform:scale(.9);filter:brightness(1.6);}100%{transform:none;}}
   .cbtns.wait .cbtn{filter:grayscale(.6) brightness(.85);}
+  .free{display:flex;gap:8px;width:min(100%,440px);margin-top:14px;}
+  #freeIn{flex:1;min-width:0;font-family:inherit;font-size:17px;font-weight:700;padding:12px 14px;border-radius:14px;border:3px solid #fff;outline:none;box-shadow:0 4px 0 rgba(0,0,0,.2);}
+  #freeSend{font-family:inherit;font-size:17px;font-weight:900;color:#5a2800;border:none;border-radius:14px;padding:0 18px;cursor:pointer;
+    background:linear-gradient(135deg,#fff3a0,#ffc531);box-shadow:0 4px 0 #c47a00;}
+  #freeSend:active{transform:translateY(3px);box-shadow:0 1px 0 #c47a00;}
   #cheerMsg{margin-top:12px;min-height:1.4em;font-size:15px;font-weight:900;color:#fff;text-shadow:0 1px 4px rgba(120,20,0,.6);}
   .card.chosen{animation:chosen .6s ease-out forwards;z-index:2;}
   @keyframes chosen{0%{transform:scale(1);}40%{transform:scale(1.12);}100%{transform:scale(1.06);}}
@@ -146,6 +153,10 @@
   </div>
   <div class="phase" id="cheerPhase">クイズ中！ 応援しよう</div>
   <div class="cbtns" id="cbtns"></div>
+  <div class="free">
+    <input id="freeIn" maxlength="20" placeholder="自由にコメント（20文字まで）" autocomplete="off" enterkeyhint="send">
+    <button id="freeSend">送る</button>
+  </div>
   <div id="cheerMsg"></div>
   <div class="foot" style="margin-top:auto"><button class="link" id="btnCheerQuit">参加方法を変える</button><span class="room">部屋 RKNT</span></div>
 </div>
@@ -298,19 +309,22 @@ function renderCheer(force){
   const box=$('cbtns'); box.innerHTML='';
   (ans?CH_ANS:CH_QUIZ).forEach(t=>{ const b=document.createElement('button'); b.className='cbtn'; b.textContent=t; b.onclick=()=>sendCheer(t,b); box.appendChild(b); });
 }
-function sendCheer(t,b){
-  const now=Date.now(); if(now-lastSent<1300){ $('cheerMsg').textContent='ちょっと待ってね…'; return; }
-  if(!(conn&&conn.open)){ connect(); $('cheerMsg').textContent='接続中です…'; return; }
-  lastSent=now; conn.send({type:'cheer',name:nick,text:t});
+$('freeSend').addEventListener('click',()=>{ const v=$('freeIn').value.replace(/\s+/g,' ').trim().slice(0,20); if(!v){ $('freeIn').focus(); return; }
+  if(sendCheer(v,$('freeSend'),true)) $('freeIn').value=''; });
+$('freeIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('freeSend').click(); } });
+function sendCheer(t,b,free){
+  const now=Date.now(); if(now-lastSent<1300){ $('cheerMsg').textContent='ちょっと待ってね…'; return false; }
+  if(!(conn&&conn.open)){ connect(); $('cheerMsg').textContent='接続中です…'; return false; }
+  lastSent=now; conn.send({type:'cheer',name:nick,text:t,free:!!free});
   b.classList.remove('sent'); void b.offsetWidth; b.classList.add('sent'); if(navigator.vibrate) navigator.vibrate(25);
   $('cheerMsg').textContent='「'+t+'」を送りました！';
   $('cbtns').classList.add('wait'); setTimeout(()=>$('cbtns').classList.remove('wait'),1300);
+  return true;
 }
 
 /* 前回選んだチームを覚えておく（開き直したときはOPを飛ばす） */
-const saved=load('a25_team_'+ROOM);
-if(load('a25_role')==='cheer' && load('a25_nick')) startCheer(load('a25_nick'));
-else if(saved && TEAM_NAME[saved]) chooseTeam(saved);
+// 毎回タイトル画面から始め、前回の参加内容はリセットする
+try{ ['a25_role','a25_nick','a25_team_'+ROOM].forEach(k=>localStorage.removeItem(k)); }catch(e){}
 </script>
 </body>
 </html>
