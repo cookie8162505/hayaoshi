@@ -288,7 +288,7 @@ function render(){
 }
 
 /* ---- 応援 ---- */
-const CH_QUIZ=['分かった！','うーむ..','これはいける！','がんばれ！'], CH_ANS=['余裕！','これは無理！','容赦ないね！','強い！'];
+const CH_PRE=['やるね～','ここから！','温まってきたぁ~!','ここは激アツ！'], CH_QUIZ=['分かった！','うーむ..','これはいける！','がんばれ！'], CH_ANS=['余裕！','これは無理！','容赦ないね！','強い！'];
 $('btnCheerRole').addEventListener('click',()=>{ $('nickIn').value=load('a25_nick')||''; show('nick'); setTimeout(()=>$('nickIn').focus(),100); });
 $('btnNickBack').addEventListener('click',()=>show('pick'));
 $('btnNickOk').addEventListener('click',()=>{ const v=$('nickIn').value.trim().slice(0,10); if(!v){ $('nickIn').focus(); return; } startCheer(v); });
@@ -302,12 +302,12 @@ function startCheer(name){
 let lastSent=0, curSet='';
 function renderCheer(force){
   if(role!=='cheer') return;
-  const ans = state && state.phase==='answer';
-  const set = ans ? 'ans' : 'quiz';
-  $('cheerPhase').textContent = ans ? '回答発表！ ひとこと言おう' : 'クイズ中！ 応援しよう';
+  const ph = state && state.phase;
+  const set = ph==='answer' ? 'ans' : (ph==='quiz' ? 'quiz' : 'pre');
+  $('cheerPhase').textContent = {ans:'回答発表！ ひとこと言おう',quiz:'クイズ中！ 応援しよう',pre:'次の問題を待つ間に、ひとこと！'}[set];
   if(set===curSet && !force) return; curSet=set;
   const box=$('cbtns'); box.innerHTML='';
-  (ans?CH_ANS:CH_QUIZ).forEach(t=>{ const b=document.createElement('button'); b.className='cbtn'; b.textContent=t; b.onclick=()=>sendCheer(t,b); box.appendChild(b); });
+  ({ans:CH_ANS,quiz:CH_QUIZ,pre:CH_PRE}[set]).forEach(t=>{ const b=document.createElement('button'); b.className='cbtn'; b.textContent=t; b.onclick=()=>sendCheer(t,b); box.appendChild(b); });
 }
 $('freeSend').addEventListener('click',()=>{ const v=$('freeIn').value.replace(/\s+/g,' ').trim().slice(0,20); if(!v){ $('freeIn').focus(); return; }
   if(sendCheer(v,$('freeSend'),true)) $('freeIn').value=''; });
