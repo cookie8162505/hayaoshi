@@ -16,6 +16,9 @@
   .scr{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px);}
   .hidden{display:none !important;}
+  #pick{overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;}
+  #pick>h2{margin-top:auto;}
+  #pick>#btnAdmin{margin-bottom:auto !important;}
 
   /* ===== OP ===== */
   #op .logo{width:min(94vw,520px);filter:drop-shadow(0 8px 18px rgba(120,30,0,.35));animation:logoIn .7s cubic-bezier(.22,1,.36,1) .25s both;}
@@ -124,30 +127,20 @@
 #admAsk .aa-btns{display:flex;gap:10px;margin-top:18px;}
 #admAsk .aa-btns button{flex:1;font:inherit;font-size:18px;font-weight:900;border-radius:12px;padding:12px;border:0;}
 #admNo{background:#eee;color:#555;} #admYes{background:linear-gradient(135deg,#ff6b8a,#ff2d55);color:#fff;}
-#admin{position:fixed;inset:0;background:#1d1430;color:#fff;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:8px 10px calc(8px + env(safe-area-inset-bottom));gap:8px;}
-#admin.hidden{display:none;}
-#admin .ad-top{flex:2 1 0;min-height:0;display:flex;flex-direction:column;gap:6px;align-items:stretch;}
-#admin .ad-bot{flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:6px;}
-#admin .ad-head{display:flex;align-items:center;gap:8px;}
-#admin .ad-title{font-weight:900;font-size:16px;}
-#admin .ad-conn{display:flex;align-items:center;gap:5px;font-size:12px;color:#ccc;flex:1;}
-#admin .ad-conn i{width:9px;height:9px;border-radius:50%;background:#f5a623;display:inline-block;}
+#admin{position:fixed;inset:0;background:#000;color:#fff;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;}
+#admin .mr-bar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:4px 10px;padding-top:max(4px,env(safe-area-inset-top));background:#1d1430;font-size:13px;}
+#admin .ad-title{font-weight:900;}
+#admin .ad-conn{display:flex;align-items:center;gap:5px;font-size:12px;color:#ccc;flex:1;min-width:0;white-space:nowrap;overflow:hidden;}
+#admin .ad-conn i{width:9px;height:9px;border-radius:50%;background:#f5a623;display:inline-block;flex:0 0 auto;}
 #admin .ad-conn.ok i{background:#1fc977;} #admin .ad-conn.ng i{background:#ff3b3b;}
-#admin .ad-quit{font:inherit;font-size:12px;color:#fff;background:transparent;border:1px solid #6a5a8a;border-radius:99px;padding:4px 12px;}
-#admin .ad-info{font-size:13px;font-weight:700;color:#ffd24d;min-height:1.3em;}
-#admin .ad-teams{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-#admin .ad-teams button{font:inherit;font-size:17px;font-weight:900;color:#fff;border:3px solid transparent;border-radius:10px;padding:7px 0;}
-#admin .ad-teams button.on{border-color:#ffd24d;box-shadow:0 0 12px #ffd24d;}
-#admin .ad-board{flex:0 0 auto;width:min(100%,calc(66dvh - 130px));aspect-ratio:1;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:4px;background:#000;padding:4px;border-radius:8px;}
-#admin .ad-board button{font:inherit;font-size:15px;font-weight:900;border:0;border-radius:4px;background:#ececec;color:#777;padding:0;min-width:0;min-height:0;}
-#admin .ad-board button.lg{outline:3px solid #ffd24d;outline-offset:-3px;animation:lgb .9s ease-in-out infinite;}
-@keyframes lgb{50%{filter:brightness(1.35);}}
-#admin .ad-think{font:inherit;font-size:16px;font-weight:900;color:#2a1a40;background:#ffd24d;border:0;border-radius:10px;padding:8px;}
-#admin .ad-think.on{background:#ff8a3d;color:#fff;}
-#admin .ad-ans{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;}
-#admin .ad-ans button{font:inherit;font-weight:900;font-size:15px;line-height:1.2;border:0;border-radius:12px;background:#fff;color:#2a1a40;display:flex;align-items:center;gap:6px;padding:4px 8px;text-align:left;min-height:0;overflow:hidden;}
-#admin .ad-ans button b{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#ff2d55;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;}
-#admin .ad-ans button:disabled{opacity:.3;}
+#admin .mr-b{font:inherit;font-size:12px;color:#fff;background:transparent;border:1px solid #6a5a8a;border-radius:99px;padding:3px 12px;}
+#admin .mr-area{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;}
+#mrVid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:0 0;background:#000;}
+#admin .mr-wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:16px;line-height:1.7;padding:20px;color:#ddd;}
+#admin .mr-wait b{color:#ffd24d;}
+#admin .mr-wait small{display:block;margin-top:10px;font-size:12px;color:#999;}
+.mr-tap{position:fixed;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #ffd24d;pointer-events:none;z-index:60;animation:mrTap .45s ease-out forwards;}
+@keyframes mrTap{to{transform:scale(1.9);opacity:0;}}
 </style>
 </head>
 <body>
@@ -174,18 +167,11 @@
   <div class="aa-btns"><button id="admNo">いいえ</button><button id="admYes">はい</button></div></div></div>
 
 <div id="admin" class="scr hidden">
-  <div class="ad-top">
-    <div class="ad-head"><span class="ad-title">🛠 管理者</span><span class="ad-conn" id="conn3"><i></i><span id="connText3">接続中…</span></span><button class="ad-quit" id="admQuit">終了</button></div>
-    <div class="ad-info" id="adInfo">会場の画面を待っています…</div>
-    <div class="ad-teams">
-      <button data-at="red" style="background:#ff2d55">赤</button><button data-at="green" style="background:#0fb566">緑</button>
-      <button data-at="white" style="background:#fff;color:#3d4452">白</button><button data-at="blue" style="background:#1a6fff">青</button>
-    </div>
-    <div class="ad-board" id="adBoard"></div>
-  </div>
-  <div class="ad-bot">
-    <button class="ad-think" id="adThink">🤔 考え中</button>
-    <div class="ad-ans" id="adAns"></div>
+  <div class="mr-bar"><span class="ad-title">🛠 管理者</span><span class="ad-conn" id="conn3"><i></i><span id="connText3">接続中…</span></span>
+    <button class="mr-b hidden" id="mrReset">等倍</button><button class="mr-b" id="admQuit">終了</button></div>
+  <div class="mr-area" id="mrArea">
+    <video id="mrVid" autoplay playsinline muted></video>
+    <div class="mr-wait" id="mrWait">会場のパソコンで<br><b>「📱 管理者スマホに画面を送る」</b><br>を押してください<small>（黒いスタート画面、または左の「QR」ボタンの中にあります）<br>スマホを横向きにすると大きく見えます</small></div>
   </div>
 </div>
 
@@ -279,6 +265,7 @@ function connect(){
     try{ if(peer) peer.destroy(); }catch(e){}
     peer=new Peer(undefined,peerOpts());
     peer.on('open',()=>openConn());
+    peer.on('call',c=>onCall(c));
     peer.on('error',e=>{ if(e && e.type==='peer-unavailable'){ hostMissing=true; showMissing(); } else setConn(false,'再接続中…'); scheduleRetry(); });
     peer.on('disconnected',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
   }else openConn();
@@ -375,31 +362,59 @@ function sendCheer(t,b,free){
   return true;
 }
 
-/* ---- 管理者 ---- */
-let adm=null;
-const AT_NAME={red:'赤',green:'緑',white:'白',blue:'青'};
+/* ---- 管理者：パソコン画面のミラー ---- */
+let adm=null, wakeLock=null;
 $('btnAdmin').addEventListener('click',()=>$('admAsk').classList.remove('hidden'));
 $('admNo').addEventListener('click',()=>$('admAsk').classList.add('hidden'));
 $('admYes').addEventListener('click',()=>{ $('admAsk').classList.add('hidden'); startAdmin(); });
-$('admQuit').addEventListener('click',()=>{ role='team'; adm=null; try{ if(conn) conn.close(); }catch(e){} show('pick'); });
-(function(){ const b=$('adBoard'); for(let i=0;i<25;i++){ const c=document.createElement('button'); c.textContent=i+1; c.onclick=()=>admSend({cmd:'cell',i}); b.appendChild(c); }
-  const a=$('adAns'); for(let i=0;i<4;i++){ const c=document.createElement('button'); c.innerHTML='<b>'+(i+1)+'</b><span></span>'; c.disabled=true; c.onclick=()=>admSend({cmd:'answer',i}); a.appendChild(c); } })();
-document.querySelectorAll('[data-at]').forEach(b=>b.addEventListener('click',()=>admSend({cmd:'team',team:b.dataset.at})));
-$('adThink').addEventListener('click',()=>admSend({cmd:'think'}));
-function admSend(o){ if(navigator.vibrate) navigator.vibrate(25); if(!(conn&&conn.open)){ connect(); return; } conn.send(Object.assign({type:'admin'},o)); }
-function startAdmin(){ role='admin'; team=null; document.body.className=''; show('admin'); renderAdmin(); connect(); if(conn&&conn.open) conn.send(hello()); }
-function renderAdmin(){
-  if(role!=='admin') return;
-  const d=adm||{board:Array(25).fill(null),legal:[],picking:null,answering:null,choices:null,think:false,q:0};
-  const lg=new Set(d.legal||[]);
-  [...$('adBoard').children].forEach((c,i)=>{ const t=d.board[i]; c.style.background=t?TEAM_BG[t]:'#ececec'; c.style.color=t?(t==='white'?'#3d4452':'#fff'):'#777'; c.classList.toggle('lg',!!d.picking&&lg.has(i)); });
-  document.querySelectorAll('[data-at]').forEach(b=>b.classList.toggle('on',b.dataset.at===d.picking));
-  [...$('adAns').children].forEach((c,i)=>{ const on=!!d.answering&&d.choices&&d.choices[i]!=null; c.disabled=!on; c.querySelector('span').textContent=d.choices&&d.choices[i]||''; });
-  const th=$('adThink'); th.textContent=d.think?'■ 考え中':'🤔 考え中'; th.classList.toggle('on',!!d.think);
-  $('adInfo').textContent = !adm ? '会場の画面を待っています…'
-    : d.answering ? `${AT_NAME[d.answering]}チームが回答中 → 1〜4で答えをタップ`
-    : d.picking ? `${AT_NAME[d.picking]}チーム：${d.attack?'奪う':'置く'}パネルをタップ`
-    : `第${d.q||0}問　チームの色を押すとパネル選択`;
+$('admQuit').addEventListener('click',()=>{ role='team'; const v=$('mrVid'); v.srcObject=null; $('mrWait').classList.remove('hidden'); try{ if(conn) conn.close(); }catch(e){} try{ if(wakeLock) wakeLock.release(); }catch(e){} show('pick'); });
+function renderAdmin(){}
+function startAdmin(){ role='admin'; team=null; document.body.className=''; show('admin'); connect(); if(conn&&conn.open) conn.send(hello());
+  try{ navigator.wakeLock && navigator.wakeLock.request('screen').then(w=>wakeLock=w).catch(()=>{}); }catch(e){} }
+function onCall(call){
+  if(role!=='admin'){ try{ call.close(); }catch(e){} return; }
+  call.answer();
+  call.on('stream',s=>{ const v=$('mrVid'); v.srcObject=s; v.muted=true; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); $('mrWait').classList.add('hidden'); });
+  call.on('close',()=>{ const v=$('mrVid'); if(v.srcObject && !v.srcObject.active){ v.srcObject=null; $('mrWait').classList.remove('hidden'); } });
+}
+setInterval(()=>{ if(role!=='admin') return; const v=$('mrVid'); if(v.srcObject && !v.srcObject.active){ v.srcObject=null; $('mrWait').classList.remove('hidden'); } },1500);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && role==='admin'){ try{ navigator.wakeLock && navigator.wakeLock.request('screen').then(w=>wakeLock=w).catch(()=>{}); }catch(e){} } });
+
+/* 拡大（2本指）・移動・タップ */
+let zs=1, zx=0, zy=0;
+function applyZoom(){ const v=$('mrVid'); if(zs<=1.01){ zs=1; zx=0; zy=0; }
+  const a=$('mrArea'), W=a.clientWidth, H=a.clientHeight; zx=Math.min(0,Math.max(W-W*zs,zx)); zy=Math.min(0,Math.max(H-H*zs,zy));
+  v.style.transform=`translate(${zx}px,${zy}px) scale(${zs})`; $('mrReset').classList.toggle('hidden',zs===1); }
+$('mrReset').addEventListener('click',()=>{ zs=1; applyZoom(); });
+let tStart=null, pinch=null, moved=false, lastPan=null;
+const area=$('mrArea');
+area.addEventListener('touchstart',e=>{ e.preventDefault();
+  if(e.touches.length===2){ const [a,b]=e.touches; pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:zs,mx:(a.clientX+b.clientX)/2,my:(a.clientY+b.clientY)/2,zx,zy}; moved=true; tStart=null; return; }
+  if(e.touches.length===1){ const t=e.touches[0]; tStart={x:t.clientX,y:t.clientY,time:Date.now()}; lastPan={x:t.clientX,y:t.clientY}; moved=false; }
+},{passive:false});
+area.addEventListener('touchmove',e=>{ e.preventDefault();
+  const r=area.getBoundingClientRect();
+  if(pinch && e.touches.length===2){ const [a,b]=e.touches; const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+    const ns=Math.min(5,Math.max(1,pinch.s*d/pinch.d)); const mx=pinch.mx-r.left, my=pinch.my-r.top;
+    zx=mx-(mx-pinch.zx)*ns/pinch.s; zy=my-(my-pinch.zy)*ns/pinch.s; zs=ns; applyZoom(); return; }
+  if(tStart && e.touches.length===1){ const t=e.touches[0];
+    if(Math.hypot(t.clientX-tStart.x,t.clientY-tStart.y)>12) moved=true;
+    if(moved && zs>1){ zx+=t.clientX-lastPan.x; zy+=t.clientY-lastPan.y; applyZoom(); }
+    lastPan={x:t.clientX,y:t.clientY}; }
+},{passive:false});
+area.addEventListener('touchend',e=>{ e.preventDefault();
+  if(e.touches.length===0){ if(tStart && !moved) mirrorTap(tStart.x,tStart.y); tStart=null; pinch=null; }
+},{passive:false});
+area.addEventListener('mousedown',e=>{ if(e.button===0) mirrorTap(e.clientX,e.clientY); });   // パソコンで確認するとき用
+function mirrorTap(px,py){
+  const v=$('mrVid'); if(!v.srcObject || !v.videoWidth) return;
+  const r=v.getBoundingClientRect(); const vw=v.videoWidth, vh=v.videoHeight;
+  const sc=Math.min(r.width/vw, r.height/vh), cw=vw*sc, ch=vh*sc, ox=r.left+(r.width-cw)/2, oy=r.top+(r.height-ch)/2;
+  const x=(px-ox)/cw, y=(py-oy)/ch; if(x<0||x>1||y<0||y>1) return;
+  const m=document.createElement('div'); m.className='mr-tap'; m.style.left=px+'px'; m.style.top=py+'px'; document.body.appendChild(m); setTimeout(()=>m.remove(),500);
+  if(navigator.vibrate) navigator.vibrate(20);
+  if(!(conn&&conn.open)){ connect(); return; }
+  conn.send({type:'admin',cmd:'tap',x,y});
 }
 
 /* 前回選んだチームを覚えておく（開き直したときはOPを飛ばす） */
