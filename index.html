@@ -115,6 +115,39 @@
   .foot{display:flex;gap:10px;align-items:center;}
   .link{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.7);color:#fff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:800;font-family:inherit;}
   .room{font-size:11px;color:#fff;opacity:.85;}
+#btnAdmin{position:absolute;top:10px;right:10px;z-index:5;font:inherit;font-size:13px;font-weight:900;color:#5b4a78;background:#fff;border:2px solid #d8cfe6;border-radius:99px;padding:6px 14px;}
+#admAsk{position:fixed;inset:0;z-index:50;background:rgba(20,10,40,.6);display:flex;align-items:center;justify-content:center;}
+#admAsk.hidden{display:none;}
+#admAsk .aa-box{background:#fff;border-radius:18px;padding:22px 20px;width:min(84vw,340px);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4);}
+#admAsk p{font-size:22px;font-weight:900;color:#2a1a40;margin:0 0 6px;}
+#admAsk small{color:#7a6a95;font-size:13px;}
+#admAsk .aa-btns{display:flex;gap:10px;margin-top:18px;}
+#admAsk .aa-btns button{flex:1;font:inherit;font-size:18px;font-weight:900;border-radius:12px;padding:12px;border:0;}
+#admNo{background:#eee;color:#555;} #admYes{background:linear-gradient(135deg,#ff6b8a,#ff2d55);color:#fff;}
+#admin{position:fixed;inset:0;background:#1d1430;color:#fff;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:8px 10px calc(8px + env(safe-area-inset-bottom));gap:8px;}
+#admin.hidden{display:none;}
+#admin .ad-top{flex:2 1 0;min-height:0;display:flex;flex-direction:column;gap:6px;align-items:stretch;}
+#admin .ad-bot{flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:6px;}
+#admin .ad-head{display:flex;align-items:center;gap:8px;}
+#admin .ad-title{font-weight:900;font-size:16px;}
+#admin .ad-conn{display:flex;align-items:center;gap:5px;font-size:12px;color:#ccc;flex:1;}
+#admin .ad-conn i{width:9px;height:9px;border-radius:50%;background:#f5a623;display:inline-block;}
+#admin .ad-conn.ok i{background:#1fc977;} #admin .ad-conn.ng i{background:#ff3b3b;}
+#admin .ad-quit{font:inherit;font-size:12px;color:#fff;background:transparent;border:1px solid #6a5a8a;border-radius:99px;padding:4px 12px;}
+#admin .ad-info{font-size:13px;font-weight:700;color:#ffd24d;min-height:1.3em;}
+#admin .ad-teams{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+#admin .ad-teams button{font:inherit;font-size:17px;font-weight:900;color:#fff;border:3px solid transparent;border-radius:10px;padding:7px 0;}
+#admin .ad-teams button.on{border-color:#ffd24d;box-shadow:0 0 12px #ffd24d;}
+#admin .ad-board{flex:0 0 auto;width:min(100%,calc(66dvh - 130px));aspect-ratio:1;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:4px;background:#000;padding:4px;border-radius:8px;}
+#admin .ad-board button{font:inherit;font-size:15px;font-weight:900;border:0;border-radius:4px;background:#ececec;color:#777;padding:0;min-width:0;min-height:0;}
+#admin .ad-board button.lg{outline:3px solid #ffd24d;outline-offset:-3px;animation:lgb .9s ease-in-out infinite;}
+@keyframes lgb{50%{filter:brightness(1.35);}}
+#admin .ad-think{font:inherit;font-size:16px;font-weight:900;color:#2a1a40;background:#ffd24d;border:0;border-radius:10px;padding:8px;}
+#admin .ad-think.on{background:#ff8a3d;color:#fff;}
+#admin .ad-ans{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;}
+#admin .ad-ans button{font:inherit;font-weight:900;font-size:15px;line-height:1.2;border:0;border-radius:12px;background:#fff;color:#2a1a40;display:flex;align-items:center;gap:6px;padding:4px 8px;text-align:left;min-height:0;overflow:hidden;}
+#admin .ad-ans button b{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#ff2d55;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;}
+#admin .ad-ans button:disabled{opacity:.3;}
 </style>
 </head>
 <body>
@@ -125,6 +158,7 @@
 </div>
 
 <div id="pick" class="scr hidden">
+  <button id="btnAdmin">管理者</button>
   <h2>きみのチームは？</h2>
   <div class="sub">チームのキャラクターをタップしてね</div>
   <div class="cards">
@@ -133,6 +167,25 @@
     <button class="card white" data-team="white"><img alt="" data-char="white"><span class="nm">シロユニマくん</span><span class="tm">白チーム</span></button>
     <button class="card blue" data-team="blue"><img alt="" data-char="blue"><span class="nm">アオユニマくん</span><span class="tm">青チーム</span></button>
     <button class="card cheer-card" id="btnCheerRole"><span class="mega">📣</span><span class="nm">応援する</span><span class="tm">クイズには参加しないで、コメントで盛り上げる</span></button>
+  </div>
+</div>
+
+<div id="admAsk" class="hidden"><div class="aa-box"><p>主催者ですか？</p><small>会場のゲームを操作する画面になります</small>
+  <div class="aa-btns"><button id="admNo">いいえ</button><button id="admYes">はい</button></div></div></div>
+
+<div id="admin" class="scr hidden">
+  <div class="ad-top">
+    <div class="ad-head"><span class="ad-title">🛠 管理者</span><span class="ad-conn" id="conn3"><i></i><span id="connText3">接続中…</span></span><button class="ad-quit" id="admQuit">終了</button></div>
+    <div class="ad-info" id="adInfo">会場の画面を待っています…</div>
+    <div class="ad-teams">
+      <button data-at="red" style="background:#ff2d55">赤</button><button data-at="green" style="background:#0fb566">緑</button>
+      <button data-at="white" style="background:#fff;color:#3d4452">白</button><button data-at="blue" style="background:#1a6fff">青</button>
+    </div>
+    <div class="ad-board" id="adBoard"></div>
+  </div>
+  <div class="ad-bot">
+    <button class="ad-think" id="adThink">🤔 考え中</button>
+    <div class="ad-ans" id="adAns"></div>
   </div>
 </div>
 
@@ -189,7 +242,7 @@ let role='team', nick='', team=null, peer=null, conn=null, state=null, retryTime
 const $=id=>document.getElementById(id);
 function store(k,v){ try{ v===undefined?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
 function load(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
-function show(id){ ['op','pick','play','nick','cheer'].forEach(s=>$(s).classList.toggle('hidden',s!==id)); }
+function show(id){ ['op','pick','play','nick','cheer','admin'].forEach(s=>$(s).classList.toggle('hidden',s!==id)); }
 document.querySelectorAll('[data-char]').forEach(im=>im.src=CHARA[im.dataset.char].normal);
 
 /* ---- OP ---- */
@@ -216,8 +269,8 @@ function chooseTeam(t){
 $('change').addEventListener('click',()=>{ store('a25_team_'+ROOM); show('pick'); });
 
 /* ---- 接続（切れたら自動で再接続） ---- */
-function setConn(ok,text){ for(const [c,t] of [[$('conn'),$('connText')],[$('conn2'),$('connText2')]]){ c.classList.toggle('ok',ok===true); c.classList.toggle('ng',ok===false); t.textContent=text; } }
-function hello(){ return role==='cheer' ? {type:'hello',role:'cheer',name:nick} : {type:'hello',team}; }
+function setConn(ok,text){ for(const [c,t] of [[$('conn'),$('connText')],[$('conn2'),$('connText2')],[$('conn3'),$('connText3')]]){ c.classList.toggle('ok',ok===true); c.classList.toggle('ng',ok===false); t.textContent=text; } }
+function hello(){ if(role==='admin') return {type:'hello',role:'admin'}; return role==='cheer' ? {type:'hello',role:'cheer',name:nick} : {type:'hello',team}; }
 function connect(){
   if(typeof Peer==='undefined'){ setConn(false,'通信部品を読み込めません'); $('status').innerHTML='インターネットに<br>つながっていますか？'; return; }
   if(peer && !peer.destroyed && conn && conn.open) return;
@@ -241,12 +294,12 @@ function openConn(){
     else { setConn(false,'通信がつながりません'); $('status').innerHTML='通信がつながりません<small>Wi-Fiを切って携帯回線で試してください</small>'; }
     scheduleRetry(); },8000);
   c.on('open',()=>{ clearTimeout(to); setConn(true,'接続OK'); c.send(hello()); });
-  c.on('data',d=>{ if(d&&d.type==='state'){ state=d; render(); renderCheer(); } if(d&&d.type==='ack'){ flash(); } });
+  c.on('data',d=>{ if(d&&d.type==='state'){ state=d; render(); renderCheer(); } if(d&&d.type==='ack'){ flash(); } if(d&&d.type==='admin_state'){ adm=d; renderAdmin(); } });
   c.on('close',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
   c.on('error',()=>{ setConn(false,'再接続中…'); scheduleRetry(); });
 }
 function scheduleRetry(){ clearTimeout(retryTimer); retryTimer=setTimeout(()=>{ if(!(conn&&conn.open)) connect(); },2500); }
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden && (team||role==='cheer')) connect(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && (team||role==='cheer'||role==='admin')) connect(); });
 
 /* ---- 早押し ---- */
 const btn=$('buzz');
@@ -320,6 +373,33 @@ function sendCheer(t,b,free){
   $('cheerMsg').textContent='「'+t+'」を送りました！';
   $('cbtns').classList.add('wait'); setTimeout(()=>$('cbtns').classList.remove('wait'),1300);
   return true;
+}
+
+/* ---- 管理者 ---- */
+let adm=null;
+const AT_NAME={red:'赤',green:'緑',white:'白',blue:'青'};
+$('btnAdmin').addEventListener('click',()=>$('admAsk').classList.remove('hidden'));
+$('admNo').addEventListener('click',()=>$('admAsk').classList.add('hidden'));
+$('admYes').addEventListener('click',()=>{ $('admAsk').classList.add('hidden'); startAdmin(); });
+$('admQuit').addEventListener('click',()=>{ role='team'; adm=null; try{ if(conn) conn.close(); }catch(e){} show('pick'); });
+(function(){ const b=$('adBoard'); for(let i=0;i<25;i++){ const c=document.createElement('button'); c.textContent=i+1; c.onclick=()=>admSend({cmd:'cell',i}); b.appendChild(c); }
+  const a=$('adAns'); for(let i=0;i<4;i++){ const c=document.createElement('button'); c.innerHTML='<b>'+(i+1)+'</b><span></span>'; c.disabled=true; c.onclick=()=>admSend({cmd:'answer',i}); a.appendChild(c); } })();
+document.querySelectorAll('[data-at]').forEach(b=>b.addEventListener('click',()=>admSend({cmd:'team',team:b.dataset.at})));
+$('adThink').addEventListener('click',()=>admSend({cmd:'think'}));
+function admSend(o){ if(navigator.vibrate) navigator.vibrate(25); if(!(conn&&conn.open)){ connect(); return; } conn.send(Object.assign({type:'admin'},o)); }
+function startAdmin(){ role='admin'; team=null; document.body.className=''; show('admin'); renderAdmin(); connect(); if(conn&&conn.open) conn.send(hello()); }
+function renderAdmin(){
+  if(role!=='admin') return;
+  const d=adm||{board:Array(25).fill(null),legal:[],picking:null,answering:null,choices:null,think:false,q:0};
+  const lg=new Set(d.legal||[]);
+  [...$('adBoard').children].forEach((c,i)=>{ const t=d.board[i]; c.style.background=t?TEAM_BG[t]:'#ececec'; c.style.color=t?(t==='white'?'#3d4452':'#fff'):'#777'; c.classList.toggle('lg',!!d.picking&&lg.has(i)); });
+  document.querySelectorAll('[data-at]').forEach(b=>b.classList.toggle('on',b.dataset.at===d.picking));
+  [...$('adAns').children].forEach((c,i)=>{ const on=!!d.answering&&d.choices&&d.choices[i]!=null; c.disabled=!on; c.querySelector('span').textContent=d.choices&&d.choices[i]||''; });
+  const th=$('adThink'); th.textContent=d.think?'■ 考え中':'🤔 考え中'; th.classList.toggle('on',!!d.think);
+  $('adInfo').textContent = !adm ? '会場の画面を待っています…'
+    : d.answering ? `${AT_NAME[d.answering]}チームが回答中 → 1〜4で答えをタップ`
+    : d.picking ? `${AT_NAME[d.picking]}チーム：${d.attack?'奪う':'置く'}パネルをタップ`
+    : `第${d.q||0}問　チームの色を押すとパネル選択`;
 }
 
 /* 前回選んだチームを覚えておく（開き直したときはOPを飛ばす） */
